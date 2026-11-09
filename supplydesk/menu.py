@@ -42,6 +42,21 @@ def read_request(service):
     return customer, items, fulfillment
 
 
+def handle_quote(service):
+    request = read_request(service)
+    show_order(service.quote(*request))
+    print("Quote only: no stock reserved and no order created.")
+
+
+def handle_place(service):
+    request = read_request(service)
+    show_order(service.quote(*request))
+    if input("Place this order? [y/N]: ").strip().lower() == "y":
+        show_order(service.place_order(*request))
+    else:
+        print("Order not placed.")
+
+
 def run_menu(service):
     print("Campus Supply Desk | All prices are CAD. Orders are saved automatically.")
     while True:
@@ -54,17 +69,10 @@ def run_menu(service):
                 return 0
             if choice == "1":
                 show_catalog(service.catalog())
-            elif choice in ("2", "3"):
-                request = read_request(service)
-                if choice == "2":
-                    show_order(service.quote(*request))
-                    print("Quote only: no stock reserved and no order created.")
-                else:
-                    show_order(service.quote(*request))
-                    if input("Place this order? [y/N]: ").strip().lower() == "y":
-                        show_order(service.place_order(*request))
-                    else:
-                        print("Order not placed.")
+            elif choice == "2":
+                handle_quote(service)
+            elif choice == "3":
+                handle_place(service)
             elif choice == "4":
                 orders = service.list_orders()
                 if not orders:
