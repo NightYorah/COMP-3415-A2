@@ -11,12 +11,7 @@ STUDENT_DISCOUNT_PERCENT = 10
 FREE_DELIVERY_MIN_CENTS = 10000
 DELIVERY_FEE_CENTS = 600
 
-        discount = 0
-        if customer_type == "student" and subtotal > STUDENT_DISCOUNT_THRESHOLD_CENTS:
-            discount = (subtotal * STUDENT_DISCOUNT_PERCENT + 50) // 100
-        delivery = 0
-        if fulfillment == "delivery" and subtotal - discount < FREE_DELIVERY_MIN_CENTS:
-            delivery = DELIVERY_FEE_CENTS
+
 
 class OrderService:
     def __init__(self, state_path=".supplydesk/state.json"):
@@ -58,8 +53,12 @@ class OrderService:
                 "quantity": quantity,
                 "line_total_cents": line_total,
             })
-        discount = calculate_discount(customer_type, subtotal)
-        delivery = calculate_delivery(fulfillment, subtotal, discount)
+        discount = 0
+        if customer_type == "student" and subtotal > STUDENT_DISCOUNT_THRESHOLD_CENTS:
+            discount = (subtotal * STUDENT_DISCOUNT_PERCENT + 50) // 100
+        delivery = 0
+        if fulfillment == "delivery" and subtotal - discount < FREE_DELIVERY_MIN_CENTS:
+            delivery = DELIVERY_FEE_CENTS
         return {
             "customer_type": customer_type,
             "fulfillment": fulfillment,
